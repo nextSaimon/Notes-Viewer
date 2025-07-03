@@ -127,7 +127,33 @@ function createTree(structure, container) {
 
       const fileIcon = document.createElement("span");
       fileIcon.className = "mr-2";
-      fileIcon.textContent = "📄"; // Generic file icon
+
+      // Determine the icon based on file extension
+      const ext = item.name.split(".").pop().toLowerCase();
+      if (["jpg", "jpeg", "png", "webp"].includes(ext)) {
+        fileIcon.textContent = "🖼️"; // Image icon
+      } else if (
+        [
+          "mp4",
+          "webm",
+          "ogg",
+          "mkv",
+          "avi",
+          "mov",
+          "flv",
+          "wmv",
+          "3gp",
+          "ts",
+        ].includes(ext)
+      ) {
+        fileIcon.textContent = "🎥"; // Video icon
+      } else if (["mp3", "wav"].includes(ext)) {
+        fileIcon.textContent = "🔉"; // Audio icon (excluding ogg to avoid ambiguity)
+      } else if (["txt", "md", "log", "css", "js", "html"].includes(ext)) {
+        fileIcon.textContent = "📄"; // Text icon
+      } else {
+        fileIcon.textContent = "📄"; // Default to text icon for other files
+      }
 
       const fileName = document.createElement("span");
       fileName.textContent = item.name;
@@ -178,8 +204,8 @@ function getSiblingFiles(container) {
     .querySelectorAll(":scope > .tree-node-wrapper > .tree-node-content")
     .forEach((div) => {
       const iconSpan = div.querySelector("span:first-child");
-      // Ensure it's a file,System: file by checking its icon and if it's in allFiles
-      if (iconSpan && iconSpan.textContent === "📄") {
+      // Ensure it's a file by checking its icon and if it's in allFiles
+      if (iconSpan && ["🖼️", "🎥", "🔉", "📄"].includes(iconSpan.textContent)) {
         const match = allFiles.find((f) => f.element === div);
         if (match) files.push(match.path);
       }
@@ -401,7 +427,6 @@ function navigate(offset) {
 
   if (currentFolderFiles.length === 0 && allFiles.length > 0) {
     // If no folder is open, initialize currentFolderFiles with all browsed files
-    // For now, it will include all supported files from the entire browsed selection.
     currentFolderFiles = allFiles
       .filter((f) => supportedExtensions.test(f.fileObject.name))
       .map((f) => f.path);
