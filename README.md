@@ -64,4 +64,3 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-Feel free to customize this README for the specific features and usage of your implementation!
