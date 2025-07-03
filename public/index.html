@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Custom CSS for Tree Lines */
+      /* Base container for the tree, sets up initial indentation */
+      #file-tree {
+        position: relative;
+        padding-left: 1rem; /* Provides space for the first level's vertical line */
+      }
+
+      /* Wrapper for each folder or file item */
+      .tree-node-wrapper {
+        position: relative;
+        /* No direct border-left here; the parent's children container handles it */
+      }
+
+      /* Container for icon and text, where horizontal and small vertical lines attach */
+      .tree-node-content {
+        position: relative;
+        display: flex; /* Keeps icon and text aligned */
+        align-items: center;
+        /* Padding to create space for the lines and actual visual indentation */
+        padding-left: 1.5rem; /* 1rem for horizontal line + 0.5rem gap */
+      }
+
+      /* Horizontal line segment for each item (the "-" part of L/T) */
+      .tree-node-content::before {
+        content: "";
+        position: absolute;
+        left: 0; /* Aligns with the parent's vertical line */
+        top: 50%;
+        width: 1rem; /* Length of the horizontal line */
+        height: 2px; /* Changed for thickness */
+        background-color: #d1d5db; /* gray-300 */
+        transform: translateY(-50%);
+        z-index: 1; /* Ensures it's above other elements if needed */
+      }
+
+      /* Vertical line segment coming down from the parent's vertical line */
+      .tree-node-content::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: -50%; /* Starts from the middle of the parent's line above */
+        height: 100%; /* Extends down to the middle of this item's horizontal line */
+        width: 2px; /* Changed for thickness */
+        background-color: #d1d5db; /* gray-300 */
+        z-index: 1;
+      }
+
+      /* Main vertical line for a group of children */
+      /* This is applied to the container that holds the children of a folder */
+      .tree-children-container {
+        position: relative;
+        margin-left: 1rem; /* This sets the actual indentation level for children */
+        border-left: 2px solid #d1d5db; /* Changed for thickness */
+      }
+
+      /* Special rule for the very first level of items (children of #file-tree) */
+      /* They shouldn't have a vertical line segment coming from above them */
+      #file-tree > .tree-node-wrapper > .tree-node-content::after {
+        content: none;
+      }
+
+      /* Make the vertical line stop at the last child's horizontal line */
+      .tree-children-container
+        > .tree-node-wrapper:last-child
+        > .tree-node-content::after {
+        height: 50%; /* Only draw the top half of the vertical line segment */
+      }
+
+      /* Adjust folder icon margin for better alignment with text after padding-left */
+      .tree-node-content .mr-2 {
+        margin-right: 0.5rem; /* Reduce margin slightly if needed due to new padding */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 overflow-hidden h-screen">
+    <div class="flex h-full max-w-screen-2xl mx-auto gap-4 p-4 box-border">
+      <div
+        id="file-tree"
+        class="w-1/4 bg-white rounded-2xl shadow-md p-4 overflow-y-auto overflow-x-hidden border border-gray-200"
+      >
+        <div class="mb-4">
+          <input
+            type="file"
+            id="folder-input"
+            webkitdirectory
+            directory
+            multiple
+            class="hidden"
+          />
+          <button
+            id="browse-folder-btn"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md w-full"
+          >
+            📂 Browse Folder
+          </button>
+        </div>
+        <div id="tree-container"></div>
+      </div>
+
+      <div
+        id="preview"
+        class="w-3/4 bg-white rounded-2xl shadow-md p-4 border border-gray-200 overflow-hidden relative"
+      >
+        <div
+          id="preview-content"
+          class="w-full h-full flex items-center justify-center"
+        >
+          <span class="text-gray-500 text-center"
+            >Select a file to preview</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
